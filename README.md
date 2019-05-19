@@ -8,6 +8,9 @@ Simple tools to manually test socket programming project. Requires python3.
 - Does not require additional python module (only using ```socket```, ```argparse```, and ```ssl```)
 
 ## Common Usage:
+- ```python3 simple_tcp.py -s -p 3000```: start server socket on port 3000 and accept connection from all interface
+- ```python3 simple_tcp.py -c -h 192.168.1.20 -p 3000```: connect to 192.168.1.20:3000
+- ```python3 simple_tcp.py -i```: interactive mode, the script will ask for host, port and mode interactively (easier for noobs)
 
 ## Arguments:
 - "-h"/"--help": display all command line arguments

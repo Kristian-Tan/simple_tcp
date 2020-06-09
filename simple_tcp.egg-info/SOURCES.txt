@@ -1,0 +1,8 @@
+README.md
+setup.py
+simple_tcp/__init__.py
+simple_tcp/__main__.py
+simple_tcp.egg-info/PKG-INFO
+simple_tcp.egg-info/SOURCES.txt
+simple_tcp.egg-info/dependency_links.txt
+simple_tcp.egg-info/top_level.txt

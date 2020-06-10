@@ -3,7 +3,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 setuptools.setup(
      name='simple_tcp',
-     version='0.5',
+     version='0.6',
      author="Kristian Tanuwijaya",
      author_email="tanuwijaya.kristian@gmail.com",
      description="A simple TCP client and server for easy testing",

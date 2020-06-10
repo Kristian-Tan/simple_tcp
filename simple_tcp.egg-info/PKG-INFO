@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: simple-tcp
-Version: 0.5
+Version: 0.6
 Summary: A simple TCP client and server for easy testing
 Home-page: https://gitlab.com/kristiant/simple_tcp
 Author: Kristian Tanuwijaya

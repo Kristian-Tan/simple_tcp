@@ -105,101 +105,110 @@ if(args.ssl):
     elif(mode == "c"):
         ssl_client_ca = args.ssl_client_ca
 
-# terima input
-if(host == None):
-    host = str(input("HOST (default = "+DEFAULT_HOST+"): "))
-    if(host == ""):
-        host = DEFAULT_HOST
-if(port == None):
-    port = str(input("PORT (default = "+str(DEFAULT_PORT)+"): "))
-    if(port == ""):
-        port = DEFAULT_PORT
-    port = int(port)
-if(bufferSize == None):
-    bufferSize = str(input("BUFFER SIZE (default = "+str(DEFAULT_BUFFERSIZE)+"): "))
-    if(bufferSize == ""):
-        bufferSize = DEFAULT_BUFFERSIZE
-    bufferSize = int(bufferSize)
-if(mode == None):
-    mode = str(input("MODE (c)lient or (s)erver (default = "+DEFAULT_MODE+"): "))
-    if(mode == ""):
-        mode = DEFAULT_MODE
+
+try:
+
+    # terima input
+    if(host == None):
+        host = str(input("HOST (default = "+DEFAULT_HOST+"): "))
+        if(host == ""):
+            host = DEFAULT_HOST
+    if(port == None):
+        port = str(input("PORT (default = "+str(DEFAULT_PORT)+"): "))
+        if(port == ""):
+            port = DEFAULT_PORT
+        port = int(port)
+    if(bufferSize == None):
+        bufferSize = str(input("BUFFER SIZE (default = "+str(DEFAULT_BUFFERSIZE)+"): "))
+        if(bufferSize == ""):
+            bufferSize = DEFAULT_BUFFERSIZE
+        bufferSize = int(bufferSize)
+    if(mode == None):
+        mode = str(input("MODE (c)lient or (s)erver (default = "+DEFAULT_MODE+"): "))
+        if(mode == ""):
+            mode = DEFAULT_MODE
 
 
 
 
-# mulai jalankan
-ctx = None
-if(sslFlag and mode == "s"):
-    if(verbose):
-        print("SETTING UP SSL CONTEXT TLS SERVER...")
-    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    if(verbose):
-        print("FINISHED SETTING SSL CONTEXT")
-    if(verbose):
-        print("SETTING UP SSL CONTEXT CERTIFICATE CHAIN...")
-    ctx.load_cert_chain(ssl_server_certificate, ssl_server_privatekey)
-    if(verbose):
-        print("FINISHED SETTING SSL CONTEXT CERTIFICATE CHAIN")
-elif(sslFlag and mode == "c"):
-    if(verbose):
-        print("SETTING UP SSL CONTEXT TLS CLIENT...")
-    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    if(verbose):
-        print("FINISHED SETTING SSL CONTEXT")
-    if(verbose):
-        print("SETTING UP SSL CONTEXT LOAD CA CERTIFICATE...")
-    ctx.load_verify_locations(ssl_client_ca)
-    if(verbose):
-        print("FINISHED SETTING SSL CONTEXT LOAD CA CERTIFICATE")
+    # mulai jalankan
+    ctx = None
+    if(sslFlag and mode == "s"):
+        if(verbose):
+            print("SETTING UP SSL CONTEXT TLS SERVER...")
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        if(verbose):
+            print("FINISHED SETTING SSL CONTEXT")
+        if(verbose):
+            print("SETTING UP SSL CONTEXT CERTIFICATE CHAIN...")
+        ctx.load_cert_chain(ssl_server_certificate, ssl_server_privatekey)
+        if(verbose):
+            print("FINISHED SETTING SSL CONTEXT CERTIFICATE CHAIN")
+    elif(sslFlag and mode == "c"):
+        if(verbose):
+            print("SETTING UP SSL CONTEXT TLS CLIENT...")
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        if(verbose):
+            print("FINISHED SETTING SSL CONTEXT")
+        if(verbose):
+            print("SETTING UP SSL CONTEXT LOAD CA CERTIFICATE...")
+        ctx.load_verify_locations(ssl_client_ca)
+        if(verbose):
+            print("FINISHED SETTING SSL CONTEXT LOAD CA CERTIFICATE")
 
-if(verbose):
-    print("SETTING UP SOCKET...")
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-if(verbose):
-    print("FINISHED SETTING SOCKET")
+    if(verbose):
+        print("SETTING UP SOCKET...")
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if(verbose):
+        print("FINISHED SETTING SOCKET")
 
 
-if(sslFlag and mode == "c"):
-    if(verbose):
-        print("WRAPPING CLIENT SOCKET WITH SSL...")
-    sock = ctx.wrap_socket(sock, server_hostname=host)
-    if(verbose):
-        print("FINISHED WRAPPING CLIENT SOCKET WITH SSL")
-
-if(mode == "c"):
-    if(verbose):
-        print("CONNECTING...")
-    sock.connect((host, port))
-    if(verbose):
-        print("CONNECTED!")
-
-    while True:
-        communicate(sock, bufferSize, verbose)
-elif(mode == "s"):
-    if(verbose):
-        print("BINDING SOCKET...")
-    sock.bind((host, port))
-    if(verbose):
-        print("SOCKET BINDED")
-        print("SETTING UP LISTENER...")
-    sock.listen(1)
-    if(verbose):
-        print("FINISHED SETTING LISTENER")
-        print("WATING FOR CLIENT TO CONNECT...")
-    sockClient, addr = sock.accept()
-    if(verbose):
-        print("CLIENT CONNECTED! ADDRESS: ", addr)
-
-    if(sslFlag):
+    if(sslFlag and mode == "c"):
         if(verbose):
             print("WRAPPING CLIENT SOCKET WITH SSL...")
-        sockClient = ctx.wrap_socket(sockClient, server_side=True)
+        sock = ctx.wrap_socket(sock, server_hostname=host)
         if(verbose):
             print("FINISHED WRAPPING CLIENT SOCKET WITH SSL")
 
-    while True:
-        communicate(sockClient, bufferSize, verbose)
-else:
-    print("invalid mode, exiting...")
+    if(mode == "c"):
+        if(verbose):
+            print("CONNECTING...")
+        sock.connect((host, port))
+        if(verbose):
+            print("CONNECTED!")
 
+        while True:
+            communicate(sock, bufferSize, verbose)
+    elif(mode == "s"):
+        if(verbose):
+            print("BINDING SOCKET...")
+        sock.bind((host, port))
+        if(verbose):
+            print("SOCKET BINDED")
+            print("SETTING UP LISTENER...")
+        sock.listen(1)
+        if(verbose):
+            print("FINISHED SETTING LISTENER")
+            print("WATING FOR CLIENT TO CONNECT...")
+        sockClient, addr = sock.accept()
+        if(verbose):
+            print("CLIENT CONNECTED! ADDRESS: ", addr)
+
+        if(sslFlag):
+            if(verbose):
+                print("WRAPPING CLIENT SOCKET WITH SSL...")
+            sockClient = ctx.wrap_socket(sockClient, server_side=True)
+            if(verbose):
+                print("FINISHED WRAPPING CLIENT SOCKET WITH SSL")
+
+        while True:
+            communicate(sockClient, bufferSize, verbose)
+    else:
+        print("invalid mode, exiting...")
+
+except KeyboardInterrupt as e:
+    print("")
+    print("user close program, exiting...")
+except Exception as e:
+    print("")
+    print("ERROR:", e.strerror)
